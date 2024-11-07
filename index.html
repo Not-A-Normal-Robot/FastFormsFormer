@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastFormsFormer - WinForms Speedrunning</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer type="module"></script>
+</head>
+<body>
+    <div class="menu" id="main-menu">
+        <noscript>
+            <h1>
+                This game requires JavaScript to function properly.
+            </h1>
+        </noscript>
+        
+        <h1>FastFormsFormer</h1>
+        <h3>WinForms speedrunning game</h3>
+        <div class="start-buttons">
+            <button type="button" id="start-e">Easy</button>
+            <button type="button" id="start-m">Medium</button>
+            <button type="button" id="start-h">Hard</button>
+        </div>
+    </div>
+    <div class="menu" id="game-menu" style="display: none;">
+        <h1>Round <span id="cur-round">1</span>/<span id="last-round">20</span></h1>
+        <p>Input the name of the below component.</p>
+        <img src="" id="game-component">
+        <div id="game-control-easy">
+            <button type="button"></button>
+            <button type="button"></button>
+            <button type="button"></button>
+            <button type="button"></button>
+            <button type="button"></button>
+            <button type="button"></button>
+        </div>
+        <div id="game-control-medium"></div>
+        <div id="game-control-hard"></div>
+        <span id="game-timer">0:00.000</span>
+    </div>
+</body>
+</html>
