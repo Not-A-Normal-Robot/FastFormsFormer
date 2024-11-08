@@ -19,13 +19,21 @@
         <h3>WinForms speedrunning game</h3>
         <div class="start-buttons">
             <button type="button" id="start-e">Easy</button>
+            <span class="text-center">Multiple choice questions</span>
             <button type="button" id="start-m">Medium</button>
+            <span class="text-center">Text input + autocomplete</span>
             <button type="button" id="start-h">Hard</button>
+            <span class="text-center">Text input with no help</span>
         </div>
+        <p>
+            <small>
+                Made by <a href="https://github.com/Not-A-Normal-Robot">NOT_A_ROBOT</a>
+            </small>
+        </p>
     </div>
-    <div class="menu" id="game-menu" style="display: none;">
-        <h1>Round <span id="cur-round">1</span>/<span id="last-round">20</span></h1>
-        <p>Input the name of the below component.</p>
+    <div class="menu hide" id="game-menu">
+        <h1>Round <span id="cur-round">1</span>/<span id="last-round">25</span></h1>
+        <p id="game-instruction">Input the name of the below component.</p>
         <img src="" id="game-component">
         <div id="game-control-easy">
             <button type="button"></button>
@@ -35,9 +43,33 @@
             <button type="button"></button>
             <button type="button"></button>
         </div>
-        <div id="game-control-medium"></div>
-        <div id="game-control-hard"></div>
+        <div id="game-control-medium">
+            <input type="text" id="medium-textbox" aria-labelledby="game-instruction" list="game-autocomplete">
+            <datalist id="game-autocomplete">
+                <!-- to be filled by javascript -->
+            </datalist>
+        </div>
+        <div id="game-control-hard">
+            <input type="text" id="hard-textbox" aria-labelledby="game-instruction">
+        </div>
         <span id="game-timer">0:00.000</span>
+    </div>
+    <div class="menu hide" id="results-menu">
+        <h1>Finish!</h1>
+        <p>
+            You finished
+            <strong><span id="result-rounds">25</span></strong>
+            rounds in
+            <strong><span id="result-time">0:00.000</span></strong>.
+        </p>
+        <p>
+            You spent an average of
+            <strong><span id="result-rate">0:00.000</span></strong>
+            per question.
+        </p>
+        <button type="button" id="result-return">
+            Return to main menu
+        </button>
     </div>
 </body>
 </html>

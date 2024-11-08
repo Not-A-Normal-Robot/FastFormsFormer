@@ -24,10 +24,15 @@ body > .menu {
     width: fit-content;
     height: fit-content;
     border: 0.1em solid white;
+    box-shadow: 0 0 5em 1em black;
 }
 
 .menu > h1 {
     margin-top: 0;
+}
+
+#main-menu p {
+    margin-bottom: 0;
 }
 
 #main-menu > h1, #main-menu h3 {
@@ -37,12 +42,12 @@ body > .menu {
 #main-menu > .start-buttons {
     display: flex;
     flex-direction: column;
-    gap: 1em;
 }
 
 #main-menu > .start-buttons > button {
     padding-block: 0.8em;
     font-size: 1.25em;
+    margin-top: 1em;
 }
 
 #game-menu {
@@ -72,4 +77,34 @@ body > .menu {
     height: fit-content;
     text-align: center;
     font-family:'Courier New', Courier, monospace;
+}
+
+#game-menu #game-control-easy {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+    margin-top: 2em;
+}
+
+#game-menu #game-control-easy button {
+    padding-block: 0.5em;
+    font-size: 1.25em;
+}
+
+#game-menu #game-control-medium, #game-menu #game-control-hard {
+    display: flex;
+    flex-direction: column;
+    margin-top: 4em;
+}
+
+#game-menu input {
+    font-size: 1.4em;
+}
+
+.hide {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
 }

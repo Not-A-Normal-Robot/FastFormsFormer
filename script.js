@@ -1,6 +1,14 @@
 /// <reference lib="dom" />
 "use strict";
-/** @typedef {"easy" | "medium" | "hard"} Difficulty */
+/**
+ * @typedef {"easy" | "medium" | "hard"} Difficulty
+ * @typedef {{
+ *  name: string;
+ *  image: HTMLImageElement;
+ *  valid: boolean;
+ * }} ComponentData
+ */
+
 /**
  * @type {Difficulty[]}
  */
@@ -12,6 +20,9 @@ const ELEMENTS = {
     
     /** @type {HTMLDivElement} */
     gameMenu: document.getElementById('game-menu'),
+
+    /** @type {HTMLDivElement} */
+    resultsMenu: document.getElementById('results-menu'),
     
     /** @type {HTMLImageElement} */
     gameImage: document.getElementById('game-component'),
@@ -27,14 +38,29 @@ const ELEMENTS = {
 
     /** @type {HTMLButtonElement[]} */
     choices: Array.from(document.querySelectorAll('#game-control-easy > button')),
+
+    /** @type {HTMLDataListElement} */
+    autocomplete: document.getElementById('game-autocomplete'),
+
+    /** @type {HTMLInputElement} */
+    mediumInput: document.getElementById('medium-textbox'),
+
+    /** @type {HTMLInputElement} */
+    hardInput: document.getElementById('hard-textbox'),
+
+    /** @type {HTMLSpanElement} */
+    resultRounds: document.getElementById('result-rounds'),
+
+    /** @type {HTMLSpanElement} */
+    resultTime: document.getElementById('result-time'),
+
+    /** @type {HTMLSpanElement} */
+    resultRate: document.getElementById('result-rate'),
+
+    /** @type {HTMLButtonElement} */
+    resultReturn: document.getElementById('result-return'),
 };
 
-/**
- * @typedef {{
- *  name: string;
- *  image: HTMLImageElement;
- * }} ComponentData
- */
 
 /**
  * A list of Windows Forms components.
@@ -64,14 +90,15 @@ function initComponents() {
         /** @type {ComponentData} */
         const component = {
             name: componentName,
-            image: new Image()
+            image: new Image(),
+            valid: true
         };
 
         component.image.src = `/img/components/${componentName}.png`;
         component.image.addEventListener('error', () => {
             console.warn(`Image of component '${component.name}' errored, deleting.`);
             const myIndex = COMPONENT_LIST.findIndex(c => c.name === component.name);
-            COMPONENT_LIST.splice(myIndex, 1);
+            COMPONENT_LIST[myIndex].valid = false;
         });
 
         COMPONENT_LIST.push(component);
@@ -80,15 +107,16 @@ function initComponents() {
 
 /** @returns {ComponentData} */
 function getRandomComponent() {
-    console.debug(COMPONENT_LIST);
-    const component = COMPONENT_LIST[Math.floor(Math.random() * COMPONENT_LIST.length)];
+    const filtered_list =
+        COMPONENT_LIST.filter(c => c.valid);
+    const component = filtered_list[Math.floor(Math.random() * filtered_list.length)];
 
-    console.debug(`Component picked: `, component); // DEBUG
     return component;
 }
 
 let correctComponent = getRandomComponent();
 let startTimestamp = performance.now();
+/** The game time in milliseconds */
 let gameTime = NaN;
 let timerRunning = false;
 let round = -1;
@@ -108,11 +136,10 @@ function formatTime(ms) {
 function updateTimer() {
     const timestamp = performance.now();
     const time = timestamp - startTimestamp;
-    const timeStr = formatTime(time);
     
     if(timerRunning) {
         gameTime = time;
-        ELEMENTS.gameTimer.textContent = timeStr;
+        ELEMENTS.gameTimer.textContent = formatTime(time);
     }
 
     requestAnimationFrame(updateTimer);
@@ -125,14 +152,14 @@ function updateTimer() {
  * @returns {T[]} - The shuffled array.
  */
 function shuffleArray(arr) {
-    const newArr = arr.slice();
+    const a = arr.slice();
     
-    for(let i = newArr.length - 1; i > 0; i--) {
+    for(let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[j], a[i]] = [a[i], a[j]];
     }
 
-    return newArr;
+    return a;
 }
 
 function setChoiceButtons() {
@@ -145,27 +172,27 @@ function setChoiceButtons() {
 
     for(let i = 0; i < ELEMENTS.choices.length; i++) {
         const choice = ELEMENTS.choices[i];
+        const component = (i === correctIndex) ?
+            correctComponent :
+            incorrectComponents[i];
 
-        if(i > incorrectComponents.length) {
+        if(!component) {
             choice.style.display = 'none';
             choice.disabled = true;
+            continue;
+        } else {
+            choice.style.display = 'block';
+            choice.disabled = false;
         }
-
-        const component = (i === correctIndex) ? correctComponent : incorrectComponents[i];
         
         choice.textContent = component.name;
-        choice.addEventListener('click', () => {
-            if(component === correctComponent) {
-                nextRound();
-            }
-        });
     }
 }
 
 function nextRound() {
     round++;
 
-    if(round >= ROUNDS) {
+    if(round > ROUNDS) {
         endGame();
         return;
     }
@@ -174,18 +201,17 @@ function nextRound() {
     ELEMENTS.gameImage.src = correctComponent.image.src;
     ELEMENTS.curRound.textContent = round.toFixed(0);
     ELEMENTS.lastRound.textContent = ROUNDS.toFixed(0);
-    round++;
+    setChoiceButtons();
 }
 
 /** @param {Difficulty} difficulty */
 function startGame(difficulty) {
     DIFFICULTIES.forEach(level => {
-        const displayStyle = (level === difficulty) ? 'block' : 'none';
-        document.getElementById('game-control-' + level).style.display = displayStyle;
+        document.getElementById('game-control-' + level)
+            .classList.toggle('hide', level !== difficulty);
     });
 
-    ELEMENTS.mainMenu.style.display = 'none';
-    ELEMENTS.gameMenu.style.display = 'block';
+    goToMenu('game-menu');
 
     startTimestamp = performance.now();
     timerRunning = true;
@@ -196,7 +222,19 @@ function startGame(difficulty) {
 function endGame() {
     timerRunning = false;
 
-    // TODO: display ending time
+    ELEMENTS.resultRounds.textContent = ROUNDS.toFixed(0);
+    ELEMENTS.resultTime.textContent = formatTime(gameTime);
+
+    const msPerRound = gameTime / ROUNDS;
+    ELEMENTS.resultRate.textContent = formatTime(msPerRound);
+
+    goToMenu('results-menu');
+}
+
+/** @param {string} id */
+function goToMenu(id) {
+    Array.from(document.getElementsByClassName('menu'))
+        .forEach(el => el.classList.toggle('hide', el.id !== id));
 }
 
 function init() {
@@ -213,6 +251,39 @@ function init() {
 
     document.getElementById('start-h')
         .addEventListener('click', () => startGame('hard'));
+
+    [ELEMENTS.mediumInput, ELEMENTS.hardInput]
+        .forEach(el => el.addEventListener("input", _ => {
+            if(el.value.toLowerCase().trim() === correctComponent.name.toLowerCase()) {
+                el.value = '';
+                nextRound();
+            }
+        }));
+    
+    ELEMENTS.choices.forEach(
+        el => el.addEventListener('click', () => {
+            if(el.textContent === correctComponent.name) {
+                nextRound();
+            } else {
+                ELEMENTS.choices.forEach(el => {
+                    el.disabled = true;
+                    setTimeout(() => {
+                        el.disabled = false;
+                    }, 2500);
+                });
+            }
+        })
+    );
+    
+    COMPONENT_LIST.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.name;
+        ELEMENTS.autocomplete.appendChild(option);
+    });
+
+    ELEMENTS.resultReturn.addEventListener('click', () => {
+        goToMenu('main-menu');
+    })
     
     updateTimer();
 }
