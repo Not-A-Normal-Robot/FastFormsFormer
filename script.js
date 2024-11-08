@@ -72,18 +72,31 @@ function initComponents() {
     const list = [
         "Button",
         "CheckBox",
+        "CheckedListBox",
         "ComboBox",
         "DataGridView",
         "DateTimePicker",
+        "HScrollBar",
         "Label",
+        "LinkLabel",
         "ListBox",
         "ListView",
+        "MaskedTextBox",
+        "MonthCalendar",
+        "NotifyIcon",
+        "NumericUpDown",
         "PictureBox",
+        "PrintPreviewControl",
         "ProgressBar",
         "RadioButton",
         "RichTextBox",
+        "Splitter",
+        "StatusStrip",
+        "TabControl",
         "TextBox",
-        "TreeView"
+        "TrackBar",
+        "TreeView",
+        "VScrollBar",
     ];
 
     for(const componentName of list) {
@@ -225,8 +238,8 @@ function endGame() {
     ELEMENTS.resultRounds.textContent = ROUNDS.toFixed(0);
     ELEMENTS.resultTime.textContent = formatTime(gameTime);
 
-    const msPerRound = gameTime / ROUNDS;
-    ELEMENTS.resultRate.textContent = formatTime(msPerRound);
+    const secsPerRound = gameTime / ROUNDS / 1000;
+    ELEMENTS.resultRate.textContent = secsPerRound.toFixed(3);
 
     goToMenu('results-menu');
 }

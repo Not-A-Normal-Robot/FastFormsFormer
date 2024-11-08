@@ -52,6 +52,9 @@ body > .menu {
 
 #game-menu {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
     width: 480px;
     height: 480px;
 }
@@ -83,7 +86,8 @@ body > .menu {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1em;
-    margin-top: 2em;
+    margin-top: auto;
+    bottom: 0;
 }
 
 #game-menu #game-control-easy button {
