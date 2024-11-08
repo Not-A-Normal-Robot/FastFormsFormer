@@ -107,7 +107,7 @@ function initComponents() {
             valid: true
         };
 
-        component.image.src = `/img/components/${componentName}.png`;
+        component.image.src = `./img/components/${componentName}.png`;
         component.image.addEventListener('error', () => {
             console.warn(`Image of component '${component.name}' errored, deleting.`);
             const myIndex = COMPONENT_LIST.findIndex(c => c.name === component.name);
